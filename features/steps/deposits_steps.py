@@ -10,8 +10,9 @@ EMAIL = "luishcl@outlook.com"
 PASSWORD = "1Bees-pass2"
 DEPOSIT_URL = "https://test-bees.herokuapp.com/deposits"
 DEFAULT_URL = "https://test-bees.herokuapp.com/"
-SUCCESSFUL_MSG_DEFAULT = 'Deposit was successfully created.'
+SUCCESSFUL_MSG_CREATE = 'Deposit was successfully created.'
 SUCCESSFUL_MSG_UPDATE = 'Deposit was successfully updated.'
+SUCCESSFUL_MSG_DELETE = 'Deposit was successfully destroyed.'
 DEPOSIT_ID = "deposits/128"
 
 @given('stay on "{deposit_page}" session')
@@ -20,13 +21,16 @@ def go_to_page(context, deposit_page):
     title = context.browser.find_element(By.TAG_NAME, 'h1').text
     assert title in deposit_page
 
-    #  #Access deposits
-    #  //*[@id="navbarSupportedContent"]/ul/li[1]/a
-    # deposit_button = context.browser.find_element(By.XPATH, '//*[@id="navbarSupportedContent"]/ul/li[1]/a')
-    # deposit_button.click()
 
 @given('stay "{deposit_edit}" session')
 def step_impl(context, deposit_edit):
+    context.browser.get(DEPOSIT_URL)
+    
+    # to-do locate and Pick up the deposit that was created
+    
+
+
+    
     base_url_deposit = DEPOSIT_URL
     relative_path_deposit = DEPOSIT_ID
     final_url = urljoin(base_url_deposit, relative_path_deposit)
@@ -39,6 +43,7 @@ def step_impl(context, deposit_edit):
     #assert Title from Edit page
     title = context.browser.find_element(By.TAG_NAME, 'h1').text
     assert title in deposit_edit
+
     
 @given('pick up a deposits')
 def step_given(context):
@@ -56,38 +61,35 @@ def step_given(context):
     #         print(col.text)  # Print the text content of each cell
     
     # Localize o elemento na coluna A (por exemplo, "João")
-    texto_alvo = 'Deposit_A'
+    target_text = 'Deposit_A'
     # Localize todas as células da primeira linha (cabeçalhos das colunas)
-    celulas_cabecalho = context.browser.find_elements(By.XPATH, '//table//tr[1]/th')
+    header_cells = context.browser.find_elements(By.XPATH, '//table//tr[1]/th')
 
     # Obtenha o número de colunas
-    numero_de_colunas = len(celulas_cabecalho)
-    print(numero_de_colunas)
+    number_of_columns = len(header_cells)
+    print(number_of_columns)
 
     # Localize todas as células da tabela
-    celulas = context.browser.find_elements(By.XPATH, '//table//td')
+    cells = context.browser.find_elements(By.XPATH, '//table//td')
 
     # Varra as células para encontrar a posição do texto alvo
-    for i, celula in enumerate(celulas):
-        if texto_alvo in celula.text:
-            linha = i // numero_de_colunas  # Calcula o número da linha
-            coluna = i % numero_de_colunas  # Calcula o número da coluna
-            print(f"Texto encontrado na linha {linha + 1}, coluna {coluna + 1}")
+    for i, cell in enumerate(cells):
+        if target_text in cell.text:
+            line = i // number_of_columns  # Calcula o número da linha
+            column = i % number_of_columns  # Calcula o número da coluna
+            print(f"Texto encontrado na linha {line + 1}, coluna {column + 1}")
             break  # Saia do loop quando encontrar o texto
 
     # Reference target text  Deposits_A
-    xpath_referencia = f"html/body/div/div/table/tbody/tr[{linha + 1}]/td[{coluna + 1}]"
-    print(xpath_referencia)
+    xpath_reference = f"html/body/div/div/table/tbody/tr[{line + 1}]/td[{column + 1}]"
+    print(xpath_reference)
     # # Encontre o elemento com base no XPath
-    elemento_referencia = context.browser.find_element(By.XPATH, xpath_referencia)
-    print(elemento_referencia)
+    element_reference = context.browser.find_element(By.XPATH, xpath_reference)
+    print(element_reference)
     # Encontre o último elemento da mesma linha (próxima célula na mesma linha)
-    elemento_acao = elemento_referencia.find_element(By.XPATH, './following-sibling::td/a')
+    element_action = element_reference.find_element(By.XPATH, './following-sibling::td/a')
     # # Clique no elemento de ação
-    elemento_acao.click()
-
-
-
+    element_action.click()
 
 
 
@@ -116,6 +118,7 @@ def create_deposit(context):
 
     create_deposit_button = context.browser.find_element(By.CLASS_NAME, 'btn-primary')
     create_deposit_button.click()
+    
 
 
 @when(u'edit a deposit')
@@ -154,13 +157,19 @@ def step_impl(context):
 
 
 
+@when('destroy it')
+def do_destroy_deposit(context):
+    destroy_button_element = context.browser.find_element(By.XPATH, '/html/body/div/div[2]/form/button')
+    destroy_button_element.click()
+
+
 @then('the deposits were created successful')
 def verify_deposit(context):
     
-    successful_msg_deposit_created = context.browser.find_element(By.TAG_NAME, 'p').text
-    assert successful_msg_deposit_created in SUCCESSFUL_MSG_DEFAULT
-    print(successful_msg_deposit_created)
-
+    message_created_successful = context.browser.find_element(By.XPATH, '/html/body/div/p').text()
+    assert message_created_successful in SUCCESSFUL_MSG_CREATE
+    print(message_created_successful)
+    sleep(3)
     # Capture path from actual URL to use on deposits manager
     url_parseada = urlparse(context.browser.current_url).path
     print(url_parseada)
@@ -172,7 +181,7 @@ def verify_deposit(context):
 
 @then('the deposits were edited successful')
 def step_impl(context):
-    successful_msg_deposit_update = context.browser.find_element(By.XPATH, '/html/body/div/p').text
+    successful_msg_deposit_update = context.browser.find_element(By.XPATH, '/html/body/div/p').text()
     assert successful_msg_deposit_update in SUCCESSFUL_MSG_UPDATE
     print(successful_msg_deposit_update)
     
@@ -180,11 +189,10 @@ def step_impl(context):
     back_to_deposit_link.click()
 
 
-@when('destroy it')
-def step_when(context):
-    pass
+
 
 @then('deposit is removed')
 def step_then(context):
-    pass
-
+    message_destroyed_sucessfull = context.browser.find_element(By.XPATH, '/html/body/div/p').text()
+    assert message_destroyed_sucessfull in SUCCESSFUL_MSG_DELETE
+    print(message_destroyed_sucessfull)
