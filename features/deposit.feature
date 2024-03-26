@@ -3,7 +3,7 @@ Feature: Register on Deposit
   I want to access deposit
   So I can manager the deposit register
 
-    @create
+    @deposits @create
     Scenario: Register a Deposit
         Given stay on "Deposits" session
         When create a new deposit
@@ -19,7 +19,7 @@ Feature: Register on Deposit
         Then the deposits were created successful
 
 
-    @wip
+    @deposits @edit
     Scenario: Edit a Deposit
         Given stay "Editing deposit" session
         When edit a deposit
@@ -33,3 +33,10 @@ Feature: Register on Deposit
             }
         """
         Then the deposits were edited successful
+
+
+    @deposits @delete @wip
+    Scenario: Destroy a Deposit
+        Given pick up a deposits
+        When destroy it
+        Then deposit is removed

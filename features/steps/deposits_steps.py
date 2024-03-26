@@ -1,3 +1,4 @@
+from asyncio import sleep
 from selenium import webdriver
 from behave import given, when, then
 from selenium.webdriver.common.by import By
@@ -5,11 +6,13 @@ from selenium.webdriver.common.keys import Keys
 from json import loads
 from urllib.parse import urlparse, urljoin
 
-
+EMAIL = "luishcl@outlook.com"
+PASSWORD = "1Bees-pass2"
 DEPOSIT_URL = "https://test-bees.herokuapp.com/deposits"
+DEFAULT_URL = "https://test-bees.herokuapp.com/"
 SUCCESSFUL_MSG_DEFAULT = 'Deposit was successfully created.'
 SUCCESSFUL_MSG_UPDATE = 'Deposit was successfully updated.'
-DEPOSIT_ID = "deposits/189"
+DEPOSIT_ID = "deposits/128"
 
 @given('stay on "{deposit_page}" session')
 def go_to_page(context, deposit_page):
@@ -17,6 +20,10 @@ def go_to_page(context, deposit_page):
     title = context.browser.find_element(By.TAG_NAME, 'h1').text
     assert title in deposit_page
 
+    #  #Access deposits
+    #  //*[@id="navbarSupportedContent"]/ul/li[1]/a
+    # deposit_button = context.browser.find_element(By.XPATH, '//*[@id="navbarSupportedContent"]/ul/li[1]/a')
+    # deposit_button.click()
 
 @given('stay "{deposit_edit}" session')
 def step_impl(context, deposit_edit):
@@ -33,6 +40,63 @@ def step_impl(context, deposit_edit):
     title = context.browser.find_element(By.TAG_NAME, 'h1').text
     assert title in deposit_edit
     
+@given('pick up a deposits')
+def step_given(context):
+    # Navigate default
+    context.browser.get(DEPOSIT_URL)
+
+    # Locate the table element (e.g., by ID, class, XPath, etc.)
+    # my_table = context.browser.find_element(By.ID, 'deposits')
+
+    # Extract rows and columns from the table
+    # rows = my_table.find_elements(By.TAG_NAME, 'tr')
+    # for row in rows:
+    #     columns = row.find_elements(By.TAG_NAME, 'td')
+    #     for col in columns:
+    #         print(col.text)  # Print the text content of each cell
+    
+    # Localize o elemento na coluna A (por exemplo, "João")
+    texto_alvo = 'Deposit_A'
+    # Localize todas as células da primeira linha (cabeçalhos das colunas)
+    celulas_cabecalho = context.browser.find_elements(By.XPATH, '//table//tr[1]/th')
+
+    # Obtenha o número de colunas
+    numero_de_colunas = len(celulas_cabecalho)
+    print(numero_de_colunas)
+
+    # Localize todas as células da tabela
+    celulas = context.browser.find_elements(By.XPATH, '//table//td')
+
+    # Varra as células para encontrar a posição do texto alvo
+    for i, celula in enumerate(celulas):
+        if texto_alvo in celula.text:
+            linha = i // numero_de_colunas  # Calcula o número da linha
+            coluna = i % numero_de_colunas  # Calcula o número da coluna
+            print(f"Texto encontrado na linha {linha + 1}, coluna {coluna + 1}")
+            break  # Saia do loop quando encontrar o texto
+
+    # xpath_referencia = f"//td[text()='{nome_referencia}']"
+    # print(xpath_referencia)
+    # #html/body/div/div/table/tbody/tr[7]/td[1]
+    # # Encontre o elemento com base no XPath
+    # elemento_referencia = context.browser.find_element(By.XPATH, xpath_referencia)
+    # print(elemento_referencia)
+
+    # Encontre o último elemento da mesma linha (próxima célula na mesma linha)
+    # elemento_acao = elemento_referencia.find_element(By.XPATH, './following-sibling::td/a')
+
+    # # Clique no elemento de ação
+    # elemento_acao.click()
+
+    # Xpath
+    #/html/body/div/div/table/tbody/tr[7]/td[7]/a
+
+
+    #//tr[bb/text() = "zz"]/cc/text()
+
+
+
+
 
 @when('create a new deposit')
 def create_deposit(context):
@@ -113,7 +177,7 @@ def verify_deposit(context):
 
 
 
-@then(u'the deposits were edited successful')
+@then('the deposits were edited successful')
 def step_impl(context):
     successful_msg_deposit_update = context.browser.find_element(By.XPATH, '/html/body/div/p').text
     assert successful_msg_deposit_update in SUCCESSFUL_MSG_UPDATE
@@ -121,3 +185,13 @@ def step_impl(context):
     
     back_to_deposit_link = context.browser.find_element(By.LINK_TEXT, 'Back to deposits')
     back_to_deposit_link.click()
+
+
+@when('destroy it')
+def step_when(context):
+    pass
+
+@then('deposit is removed')
+def step_then(context):
+    pass
+
