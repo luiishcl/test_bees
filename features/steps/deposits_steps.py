@@ -75,24 +75,17 @@ def step_given(context):
             print(f"Texto encontrado na linha {linha + 1}, coluna {coluna + 1}")
             break  # Saia do loop quando encontrar o texto
 
-    # xpath_referencia = f"//td[text()='{nome_referencia}']"
-    # print(xpath_referencia)
-    # #html/body/div/div/table/tbody/tr[7]/td[1]
+    # Reference target text  Deposits_A
+    xpath_referencia = f"html/body/div/div/table/tbody/tr[{linha + 1}]/td[{coluna + 1}]"
+    print(xpath_referencia)
     # # Encontre o elemento com base no XPath
-    # elemento_referencia = context.browser.find_element(By.XPATH, xpath_referencia)
-    # print(elemento_referencia)
-
+    elemento_referencia = context.browser.find_element(By.XPATH, xpath_referencia)
+    print(elemento_referencia)
     # Encontre o último elemento da mesma linha (próxima célula na mesma linha)
-    # elemento_acao = elemento_referencia.find_element(By.XPATH, './following-sibling::td/a')
-
+    elemento_acao = elemento_referencia.find_element(By.XPATH, './following-sibling::td/a')
     # # Clique no elemento de ação
-    # elemento_acao.click()
+    elemento_acao.click()
 
-    # Xpath
-    #/html/body/div/div/table/tbody/tr[7]/td[7]/a
-
-
-    #//tr[bb/text() = "zz"]/cc/text()
 
 
 
