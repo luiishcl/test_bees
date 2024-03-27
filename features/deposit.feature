@@ -35,7 +35,7 @@ Feature: Register on Deposit
         Then the deposits were edited successful
 
 
-    @deposits @delete @wip
+    @deposits @delete
     Scenario: Destroy a Deposit
         Given pick up a deposits
         When destroy it

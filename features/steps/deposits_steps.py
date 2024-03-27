@@ -30,7 +30,7 @@ def step_impl(context, deposit_edit):
     
 
 
-    
+
     base_url_deposit = DEPOSIT_URL
     relative_path_deposit = DEPOSIT_ID
     final_url = urljoin(base_url_deposit, relative_path_deposit)
